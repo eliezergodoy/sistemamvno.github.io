@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sistema de Faturamento MVNO</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <div class="brand-mark">MV</div>
+        <div>Faturamento MVNO</div>
+      </div>
+      <nav class="nav" aria-label="Navegacao principal">
+        <button class="active" data-section="preview"><i data-lucide="table-2"></i>Dados</button>
+        <button data-section="mapping"><i data-lucide="list-checks"></i>Mapeamento</button>
+        <button data-section="errors"><i data-lucide="triangle-alert"></i>Validacao</button>
+      </nav>
+      <div class="side-meta">
+        Fluxo manual: <strong>IXC -> Sistema -> TIP Brasil</strong><br>
+        Modelo TIP: <strong>29 campos</strong>
+      </div>
+    </aside>
+
+    <main>
+      <header>
+        <div>
+          <h1>Co-faturamento TIP Brasil</h1>
+          <p class="subtitle">Importe as notas do mes em lote, confira os campos e baixe a planilha pronta para anexar na TIP Brasil.</p>
+        </div>
+        <div class="actions">
+          <button class="btn" id="sampleBtn" title="Carregar exemplo"><i data-lucide="sparkles"></i>Exemplo</button>
+          <button class="btn" id="resetBtn" title="Limpar dados"><i data-lucide="rotate-ccw"></i>Limpar</button>
+          <button class="btn primary" id="exportBtn" title="Baixar XLSX para TIP Brasil" disabled><i data-lucide="download"></i>Baixar TIP</button>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="flow">
+          <div class="flow-step"><i data-lucide="file-search"></i><div><b>1. Notas IXC</b><span>Separe todos os PDFs do mes ou compacte tudo em um ZIP.</span></div></div>
+          <div class="flow-step"><i data-lucide="upload"></i><div><b>2. Importar</b><span>Selecione varios PDFs, um ZIP, ou um relatorio XLSX/CSV.</span></div></div>
+          <div class="flow-step"><i data-lucide="shield-check"></i><div><b>3. Validar</b><span>Corrija campos obrigatorios, datas, documento, UF e valores antes de baixar.</span></div></div>
+          <div class="flow-step"><i data-lucide="paperclip"></i><div><b>4. Anexar</b><span>Baixe a planilha final e anexe manualmente dentro da TIP Brasil.</span></div></div>
+        </div>
+
+        <div class="stats">
+          <div class="stat"><span>Registros importados</span><strong id="rowsStat">0</strong></div>
+          <div class="stat"><span>Campos mapeados</span><strong id="mappedStat">0</strong></div>
+          <div class="stat"><span>Registros validos</span><strong id="validStat">0</strong></div>
+          <div class="stat"><span>Pendencias</span><strong id="errorStat">0</strong></div>
+        </div>
+
+        <div class="toolbar">
+          <label>
+            Importar notas extraidas do IXC
+            <input type="file" id="fileInput" accept=".pdf,.zip,.xlsx,.xls,.csv" multiple>
+          </label>
+        </div>
+
+        <section class="panel" data-panel="mapping">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Mapeamento de campos</div>
+              <span class="badge" id="mappingStatus">Aguardando arquivo</span>
+            </div>
+            <button class="btn" id="autoMapBtn"><i data-lucide="wand-2"></i>Auto</button>
+          </div>
+          <div class="hint" style="padding: 12px 14px 0;">Quando o relatorio do IXC tiver nomes diferentes, selecione manualmente a coluna correspondente em cada campo do modelo TIP.</div>
+          <div class="mapping-grid" id="mappingGrid"></div>
+        </section>
+
+        <section class="panel" data-panel="preview">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Previa do arquivo final</div>
+              <span class="badge" id="previewStatus">Sem dados</span>
+            </div>
+            <label style="max-width: 260px;">
+              Buscar
+              <input id="searchInput" placeholder="cliente, documento, cidade...">
+            </label>
+          </div>
+          <div class="table-wrap" id="previewWrap">
+            <div class="empty">Nenhum arquivo importado.</div>
+          </div>
+        </section>
+
+        <section class="panel" data-panel="errors">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Pendencias de validacao</div>
+              <span class="badge" id="validationStatus">Sem validacao</span>
+            </div>
+          </div>
+          <div class="errors" id="errorsList">
+            <div class="empty">As pendencias aparecem aqui depois da importacao.</div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
